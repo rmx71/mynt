@@ -1,0 +1,55 @@
+import com.example.demo.model.Parcel;
+global com.example.demo.model.DeliveryRate deliveryRate;
+
+dialect "mvel"
+
+rule "Reject"
+    when
+        parcel: Parcel(weight > 50)
+    then
+        deliveryRate.setTotalDeliveryRate(null);
+        deliveryRate.setRule("Reject");
+        deliveryRate.setWeight(String.valueOf(parcel.getWeight()));
+        deliveryRate.setVolume(String.valueOf(parcel.getVolume()));
+    end
+
+rule "Heavy Parcel"
+    when
+        parcel : Parcel(weight > 10 && weight <= 50)
+    then
+        Float rate = 20 * parcel.getWeight();
+        deliveryRate.setTotalDeliveryRate(rate);
+        deliveryRate.setRule("Heavy Parcel");
+        deliveryRate.setWeight(String.valueOf(parcel.getWeight()));
+        deliveryRate.setVolume(String.valueOf(parcel.getVolume()));
+    end
+
+rule "Small Parcel"
+    when
+        parcel : Parcel(weight <= 10 && volume < 1500)
+    then
+        deliveryRate.setTotalDeliveryRate(0.03f * parcel.getVolume());
+        deliveryRate.setRule("Small Parcel");
+        deliveryRate.setWeight(String.valueOf(parcel.getWeight()));
+        deliveryRate.setVolume(String.valueOf(parcel.getVolume()));
+    end
+
+rule "Medium Parcel"
+    when
+        parcel: Parcel(weight <= 10 && volume >= 1501 && volume < 2500)
+    then
+        deliveryRate.setTotalDeliveryRate(0.04f * parcel.getVolume());
+        deliveryRate.setRule("Medium Parcel");
+        deliveryRate.setWeight(String.valueOf(parcel.getWeight()));
+        deliveryRate.setVolume(String.valueOf(parcel.getVolume()));
+    end
+
+rule "Large Parcel"
+    when
+        parcel : Parcel(weight <= 10 && volume >= 2500)
+    then
+        deliveryRate.setTotalDeliveryRate(0.05f * parcel.getVolume());
+        deliveryRate.setRule("Large Parcel");
+         deliveryRate.setWeight(String.valueOf(parcel.getWeight()));
+         deliveryRate.setVolume(String.valueOf(parcel.getVolume()));
+    end
